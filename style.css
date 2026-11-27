@@ -1,0 +1,300 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ==== Фон игры (картинка поля) ==== */
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #1e1e2f;                          /* запасной цвет */
+    background-image: var(--field-img, none);           /* картинка поля из JS */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #fff;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+/* ==== Оверлей поворота (только вертикально) ==== */
+#rotate-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #1e1e2f;
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+#rotate-overlay .rotate-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+#rotate-overlay .rotate-icon {
+    font-size: 4em;
+    animation: rotatePhone 2s ease-in-out infinite;
+}
+@keyframes rotatePhone {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-90deg); }
+}
+#rotate-overlay p { font-size: 1.2em; color: #ffd700; }
+
+@media (orientation: landscape) {
+    #rotate-overlay { display: flex; }
+}
+
+/* ==== Игровой контейнер ==== */
+.game-container {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    padding-bottom: 60px;
+}
+
+/* ==== HUD ==== */
+.hud {
+    display: flex;
+    justify-content: space-around;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+}
+.hud-item {
+    flex: 1;
+    background: rgba(45, 45, 68, 0.85);
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.85em;
+    transition: background 0.1s;
+    backdrop-filter: blur(4px);
+}
+.hud-label { color: #bbb; font-size: 0.85em; }
+.hud-value { font-weight: bold; color: #ffd700; font-size: 1.1em; }
+
+/* ==== Сетка ==== */
+.grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    grid-template-rows: repeat(16, 1fr);
+    gap: 3px;
+    background: rgba(68, 68, 68, 0.45);   /* полупрозрачный фон сетки */
+    border: 2px solid #555;
+    border-radius: 8px;
+    padding: 4px;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+    backdrop-filter: blur(2px);
+}
+.cell {
+    background: rgba(58, 58, 78, 0.55);   /* полупрозрачные клетки — видно поле */
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s ease;
+}
+.cell:hover { background: rgba(74, 74, 94, 0.75); }
+
+/* ==== Солдат (кружок) ==== */
+.circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 90%;
+    background-image: var(--solider-img);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 20%;
+    animation: pop 0.2s ease-out;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.9);
+    pointer-events: none;
+}
+
+@keyframes pop {
+    0% { transform: translate(-50%, -50%) scale(0); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ==== Стрелочка снизу ==== */
+.panel-arrow {
+    position: fixed;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 26px;
+    border: 2px solid #ffd700;
+    background: #2a2a3e;
+    color: #ffd700;
+    border-radius: 15px 15px 8px 8px;
+    font-size: 1em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 110;
+    transition: transform 0.2s ease, bottom 0.3s ease, background 0.2s ease;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.5);
+}
+.panel-arrow:hover { background: #3a3a5e; }
+.panel-arrow.open {
+    transform: translateX(-50%) rotate(180deg);
+    bottom: 190px;
+}
+
+/* ==== Выдвижное меню снизу ==== */
+.bottom-menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 180px;
+    background: #1d2032;   /* было просто gray — теперь с прозрачностью */
+    border-top: 2px solid #555;
+    border-radius: 18px 18px 0 0;
+    padding: 10px 15px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 105;
+    box-shadow: 0 -6px 25px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+}
+.bottom-menu.open { transform: translateY(0); }
+
+.menu-handle {
+    width: 50px;
+    height: 4px;
+    background: #555;
+    border-radius: 2px;
+    margin-bottom: 5px;
+}
+
+/* ==== Большая кнопка-майонез (без подсветки) ==== */
+.big-circle-btn {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: none;
+    background-color: #e67e22;              /* заглушка, если картинка не загрузится */
+    background-image: var(--maiones-img);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    box-shadow: none;
+    transition: transform 0.1s ease;
+    user-select: none;
+    padding: 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.big-circle-btn:hover,
+.big-circle-btn:focus,
+.big-circle-btn:focus-visible {
+    box-shadow: none;
+    outline: none;
+    border: none;
+}
+
+.big-circle-btn:active {
+    transform: scale(0.95);
+    box-shadow: none;
+    outline: none;
+    border: none;
+}
+
+/* ==== Меню проигрыша ==== */
+.game-over {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 500;
+    backdrop-filter: blur(4px);
+}
+.game-over.hidden { display: none; }
+
+.game-over-content {
+    background: #2a2a3e;
+    border: 2px solid #c0392b;
+    border-radius: 15px;
+    padding: 30px 40px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    animation: slideIn 0.3s ease-out;
+    max-width: 90vw;
+}
+@keyframes slideIn {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.game-over-content h2 {
+    color: #e74c3c;
+    font-size: 1.8em;
+    margin-bottom: 15px;
+}
+.game-over-content p {
+    color: #ccc;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+.game-over-content .final-score {
+    color: #ffd700;
+    font-size: 1.2em;
+    margin: 15px 0 20px;
+}
+.game-over-content .final-score span { font-weight: bold; }
+
+.btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    color: #fff;
+}
+.btn:hover { transform: translateY(-2px); }
+
+.restart-btn {
+    background: linear-gradient(135deg, #2980b9, #3498db);
+    margin: 0 auto;
+}
+
+/* Маленькие экраны по высоте */
+@media (max-height: 700px) {
+    .hud-item { padding: 4px 6px; font-size: 0.75em; }
+    .hud-value { font-size: 1em; }
+    .big-circle-btn { width: 90px; height: 90px; }
+    .bottom-menu { height: 160px; }
+    .panel-arrow.open { bottom: 170px; }
+}

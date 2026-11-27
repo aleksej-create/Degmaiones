@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>дегустация майонеза [[не штурм!!]]</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Оверлей поворота (только вертикально) -->
+    <div id="rotate-overlay">
+        <div class="rotate-content">
+            <div class="rotate-icon">📱</div>
+            <p>Поверните устройство вертикально</p>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <!-- HUD -->
+        <div class="hud">
+            <div class="hud-item">
+                <span class="hud-label">Кружков:</span>
+                <span id="score" class="hud-value">0</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">Энергия:</span>
+                <span id="energy" class="hud-value">0.0</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">Скорость:</span>
+                <span id="multiplier" class="hud-value">1 круг / 1.0с</span>
+            </div>
+        </div>
+
+        <div id="grid" class="grid"></div>
+
+        <button id="panel-arrow" class="panel-arrow" title="Открыть меню">▲</button>
+
+        <div id="bottom-menu" class="bottom-menu">
+            <div class="menu-handle"></div>
+            <!-- Картинка майонеза подставляется через JS из IMAGES.energy -->
+            <button id="big-energy-btn" class="big-circle-btn" title="Добыть энергию"></button>
+            <p class="menu-hint">+0.5 энергии за нажатие</p>
+        </div>
+
+        <div id="game-over" class="game-over hidden">
+            <div class="game-over-content">
+                <h2>loh!</h2>
+                <p>зачем ты подписал сделку?</p>
+                <p class="final-score">Обезврежено: <span id="final-score">0</span></p>
+                <button id="restart-btn" class="btn restart-btn">🔄 Переиграть</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
